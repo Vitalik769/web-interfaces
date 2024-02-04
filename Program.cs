@@ -1,89 +1,97 @@
 using System;
-using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
-class Program
+
+namespace XamarinAPIExample
 {
-    // Поле для зберігання початкового тексту
-    private static string loremIpsumText;
-
-    static void Main()
+    public class Program
     {
-        LoadLoremIpsumText();  // Завантаження тексту "Lorem ipsum" з файлу
-
-        while (true)
+        private static readonly HttpClient client = new HttpClient();
+        // Call the methods to get data from various APIs
+        public static async Task Main(string[] args)
         {
-            // Виведення меню
-            Console.WriteLine("1. Display the number of words in the text \"Lorem ipsum\"");
-            Console.WriteLine("2. Perform a mathematical operation");
-            Console.WriteLine("0. Exit");
-
-            // Вибір пункту меню
-            Console.Write("Enter the menu item number: ");
-            int choice = int.Parse(Console.ReadLine());
-
-            // Обробка вибору користувача
-            switch (choice)
+            await GetWeatherData();
+            await GetRandomQuote();
+            await GetCurrencyExchangeRate();
+            await GetCatBreeds();
+            await GetGitHubUserInfo();
+        }
+        //Method for getting weather data
+        public static async Task GetWeatherData()
+        {
+            string apiUrl = "https://api.weatherapi.com/v1/current.json?key=030a5033ffe746588c5130648240402&q=London";
+            HttpResponseMessage response = await client.GetAsync(apiUrl);
+            if (response.IsSuccessStatusCode)
             {
-                case 1:
-                    CountWordsInLoremIpsum();
-                    break;
-                case 2:
-                    PerformMathOperation();
-                    break;
-                case 0:
-                    Environment.Exit(0);  // Вихід з програми
-                    break;
-                default:
-                    Console.WriteLine("Wrong choice");
-                    break;
+                string json = await response.Content.ReadAsStringAsync();
+                dynamic data = JsonConvert.DeserializeObject(json);
+                string temperature = data.current.temp_c;
+                Console.WriteLine($"Current temperature in London: {temperature}°C");
+            }
+        }
+        // Method to get a random quote
+        public static async Task GetRandomQuote()
+        {
+            string apiUrl = "https://api.quotable.io/random";
+            HttpResponseMessage response = await client.GetAsync(apiUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                dynamic data = JsonConvert.DeserializeObject(json);
+                string quote = data.content;
+                Console.WriteLine($"Random Quote: {quote}");
+            }
+        }
+        // Method for obtaining the exchange rate
+        public static async Task GetCurrencyExchangeRate()
+        {
+            string apiUrl = "https://api.exchangerate-api.com/v4/latest/USD";
+            HttpResponseMessage response = await client.GetAsync(apiUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                dynamic data = JsonConvert.DeserializeObject(json);
+                double exchangeRate = data.rates.EUR;
+                Console.WriteLine($"1 USD to EUR: {exchangeRate}");
+            }
+        }
+        // Method to get a list of cat breeds (limited to first 10)
+        public static async Task GetCatBreeds()
+        {
+            string apiUrl = "https://api.thecatapi.com/v1/breeds";
+            HttpResponseMessage response = await client.GetAsync(apiUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                dynamic data = JsonConvert.DeserializeObject(json);
+
+                int numberOfBreedsToShow = 10; // Change this number if you want to display more or fewer breeds
+
+                for (int i = 0; i < numberOfBreedsToShow; i++)
+                {
+                    string breedName = data[i].name;
+                    Console.WriteLine($"Cat Breed: {breedName}");
+                }
+            }
+        }
+
+        // Method to retrieve information about a GitHub user
+        public static async Task GetGitHubUserInfo()
+        {
+            string apiUrl = "https://api.github.com/users/Vitalik769";
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("SystemAminimtratorsNotebook");
+            HttpResponseMessage response = await client.GetAsync(apiUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                dynamic data = JsonConvert.DeserializeObject(json);
+                string username = data.login;
+                string bio = data.bio;
+                Console.WriteLine($"GitHub User: {username}, Bio: {bio}");
             }
         }
     }
-
-    // Метод для завантаження тексту "Lorem ipsum" з файлу
-    private static void LoadLoremIpsumText()
-    {
-        try
-        {
-            // Читання тексту з файлу та збереження у полі
-            loremIpsumText = File.ReadAllText("LoremIpsum.txt");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred while reading the text: {ex.Message}");
-        }
-    }
-
-    // Метод для виведення кількості слів у тексті "Lorem ipsum"
-    private static void CountWordsInLoremIpsum()
-    {
-        // Використання Split для розділення тексту на слова та отримання кількості слів
-        int wordCount = loremIpsumText.Split(new char[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
-        Console.WriteLine($"The number of words in the text \"Lorem ipsum\": {wordCount}");
-    }
-
-    // Метод для виконання математичної операції
-    private static void PerformMathOperation()
-    {
-        Console.Write("Enter the expression to calculate: ");
-        string expression = Console.ReadLine();
-
-        try
-        {
-            // Використання Eval для обчислення виразу
-            double result = Eval(expression);
-            Console.WriteLine($"Calculation result: {result}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred while evaluating the expression: {ex.Message}");
-        }
-    }
-
-    // Метод Eval для обчислення математичного виразу
-    private static double Eval(string expression)
-    {
-        var dataTable = new System.Data.DataTable();
-        return Convert.ToDouble(dataTable.Compute(expression, string.Empty));
-    }
 }
+

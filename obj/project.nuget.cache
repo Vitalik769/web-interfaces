@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "ZFpfV226WAOh+IU81zXe0qm7WQE3Yu7B3o/iJg7sCd/C9QHPxFuPfV9f5AkPyuOGsRYPz2X2xMN7auC1oVGqoA==",
+  "dgSpecHash": "e1iQv/E9coazPzZD9DUa0jnX2Mok6A3/vE+VVmAHJbGNlIaWChtymbrwhevvZCz69XCVga8U/ze5FeG3M8+Ygw==",
   "success": true,
   "projectFilePath": "C:\\Users\\Vitalik\\source\\repos\\ACP\\ACP\\ACP.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Vitalik\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
   "logs": []
 }
