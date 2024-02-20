@@ -1,89 +1,124 @@
 using System;
-using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 class Program
 {
-    // Поле для зберігання початкового тексту
-    private static string loremIpsumText;
-
-    static void Main()
+    static void Main(string[] args)
     {
-        LoadLoremIpsumText();  // Завантаження тексту "Lorem ipsum" з файлу
+        Console.WriteLine("Starting demonstration of Thread class...");
+        ThreadFirst();
+        Console.WriteLine("\nStarting another demonstration of Thread class...");
+        ThreadSecond();
+        Console.WriteLine("\nStarting yet another demonstration of Thread class...");
+        ThreadThird();
 
-        while (true)
+        Console.WriteLine("\nStarting demonstration of Async - Await...");
+        AsyncAwaitFirst();
+        Console.WriteLine("\nStarting another demonstration of Async - Await...");
+        AsyncAwaitSecond();
+        Console.WriteLine("\nStarting yet another demonstration of Async - Await...");
+        AsyncAwaitThird();
+
+        Console.WriteLine("\nPress any key to exit...");
+        Console.ReadKey();
+    }
+
+    static void ThreadFirst()
+    {
+        // Метод ThreadFirst демонструє сортування масиву
+        int[] array = { 5, 4, 3, 2, 1 };
+        Thread thread1 = new Thread(() =>
         {
-            // Виведення меню
-            Console.WriteLine("1. Display the number of words in the text \"Lorem ipsum\"");
-            Console.WriteLine("2. Perform a mathematical operation");
-            Console.WriteLine("0. Exit");
-
-            // Вибір пункту меню
-            Console.Write("Enter the menu item number: ");
-            int choice = int.Parse(Console.ReadLine());
-
-            // Обробка вибору користувача
-            switch (choice)
+            Console.WriteLine("Thread 1 is sorting the array...");
+            Array.Sort(array);
+            Console.WriteLine("Thread 1 sorted the array.");
+            foreach (int num in array)
             {
-                case 1:
-                    CountWordsInLoremIpsum();
-                    break;
-                case 2:
-                    PerformMathOperation();
-                    break;
-                case 0:
-                    Environment.Exit(0);  // Вихід з програми
-                    break;
-                default:
-                    Console.WriteLine("Wrong choice");
-                    break;
+                Console.WriteLine(num);
             }
-        }
+        });
+
+        thread1.Start();
+        thread1.Join();
+
+        Console.WriteLine("ThreadFirst method is done.");
     }
 
-    // Метод для завантаження тексту "Lorem ipsum" з файлу
-    private static void LoadLoremIpsumText()
+    static void ThreadSecond()
     {
-        try
+        // Метод ThreadSecond демонструє виведення довільного повідомлення
+        Thread thread2 = new Thread(() =>
         {
-            // Читання тексту з файлу та збереження у полі
-            loremIpsumText = File.ReadAllText("LoremIpsum.txt");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred while reading the text: {ex.Message}");
-        }
+            Console.WriteLine("Thread 2 is printing a message...");
+            Console.WriteLine("Hello from Thread 2!");
+        });
+
+        thread2.Start();
+        thread2.Join();
+
+        Console.WriteLine("ThreadSecond method is done.");
     }
 
-    // Метод для виведення кількості слів у тексті "Lorem ipsum"
-    private static void CountWordsInLoremIpsum()
+    static void ThreadThird()
     {
-        // Використання Split для розділення тексту на слова та отримання кількості слів
-        int wordCount = loremIpsumText.Split(new char[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
-        Console.WriteLine($"The number of words in the text \"Lorem ipsum\": {wordCount}");
+        // Метод ThreadThird демонструє виконання математичних обчислень
+        Thread thread3 = new Thread(() =>
+        {
+            Console.WriteLine("Thread 3 is performing some calculations...");
+            int result = 0;
+            for (int i = 1; i <= 100; i++)
+            {
+                result += i;
+            }
+            Console.WriteLine($"Thread 3 calculated the result: {result}");
+        });
+
+        thread3.Start();
+        thread3.Join();
+
+        Console.WriteLine("ThreadThird method is done.");
     }
 
-    // Метод для виконання математичної операції
-    private static void PerformMathOperation()
+    static async void AsyncAwaitFirst()
     {
-        Console.Write("Enter the expression to calculate: ");
-        string expression = Console.ReadLine();
+        // Метод AsyncAwaitFirst демонструє асинхронне завдання з обробкою файлів
+        Task task1 = Task.Run(async () =>
+        {
+            Console.WriteLine("Task 1 is processing files asynchronously...");
+            await Task.Delay(2000);
+            Console.WriteLine("Task 1 finished processing files.");
+        });
 
-        try
-        {
-            // Використання Eval для обчислення виразу
-            double result = Eval(expression);
-            Console.WriteLine($"Calculation result: {result}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred while evaluating the expression: {ex.Message}");
-        }
+        await task1;
+
+        Console.WriteLine("AsyncAwaitFirst method is done.");
     }
 
-    // Метод Eval для обчислення математичного виразу
-    private static double Eval(string expression)
+    static async void AsyncAwaitSecond()
     {
-        var dataTable = new System.Data.DataTable();
-        return Convert.ToDouble(dataTable.Compute(expression, string.Empty));
+        await Task.Run(() =>
+        {
+            int result = 0;
+            for (int i = 0; i < 1000000000; i++)
+            {
+                result += i;
+            }
+            Console.WriteLine("AsyncAwaitFirst completed with result: " + result);
+        });
+    }
+
+    static async void AsyncAwaitThird()
+    {
+        Console.WriteLine("Starting AsyncAwaitThird");
+        string userInput = await GetUserInputAsync();
+        Console.WriteLine("User entered: " + userInput);
+        Console.WriteLine("AsyncAwaitThird completed");
+    }
+
+    static async Task<string> GetUserInputAsync()
+    {
+        Console.Write("Enter your input: ");
+        return await Task.Run(() => Console.ReadLine());
     }
 }
