@@ -1,89 +1,73 @@
 using System;
-using System.IO;
+using System.Reflection;
 
-class Program
+namespace AdvancedReflectionExample
 {
-    // Поле для зберігання початкового тексту
-    private static string loremIpsumText;
-
-    static void Main()
+    class Classes
     {
-        LoadLoremIpsumText();  // Завантаження тексту "Lorem ipsum" з файлу
+        public int PublicField;
+        private string _privateField;
+        protected double ProtectedField;
+        internal DateTime InternalField;
+        protected internal bool ProtectedInternalField;
 
-        while (true)
+        public void PublicMethod(int param1 = 0, string param2 = "")
         {
-            // Виведення меню
-            Console.WriteLine("1. Display the number of words in the text \"Lorem ipsum\"");
-            Console.WriteLine("2. Perform a mathematical operation");
-            Console.WriteLine("0. Exit");
+            Console.WriteLine($"Method1 called with param1: {param1}, param2: {param2}");
+        }
 
-            // Вибір пункту меню
-            Console.Write("Enter the menu item number: ");
-            int choice = int.Parse(Console.ReadLine());
+        private int PrivateMethod(int arg)
+        {
+            Console.WriteLine("Method 3 called with argument: " + arg);
+            return PublicField + arg;
+        }
 
-            // Обробка вибору користувача
-            switch (choice)
+        protected void ProtectedMethod()
+        {
+            Console.WriteLine("Method 2 called");
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            try
             {
-                case 1:
-                    CountWordsInLoremIpsum();
-                    break;
-                case 2:
-                    PerformMathOperation();
-                    break;
-                case 0:
-                    Environment.Exit(0);  // Вихід з програми
-                    break;
-                default:
-                    Console.WriteLine("Wrong choice");
-                    break;
+                // 1. Creating an instance of MyClass
+                var myClassInstance = new Classes();
+
+                // 2. Demonstrating Type and TypeInfo
+                Type myClassType = myClassInstance.GetType();
+                TypeInfo myClassTypeInfo = myClassType.GetTypeInfo();
+
+                // 3. Demonstrating MemberInfo
+                MemberInfo[] members = myClassType.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                foreach (var member in members)
+                {
+                    Console.WriteLine($"Member Name: {member.Name}, Member Type: {member.MemberType}");
+                }
+
+                // 4. Demonstrating FieldInfo
+                FieldInfo[] fields = myClassType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+                foreach (var field in fields)
+                {
+                    Console.WriteLine($"Field Name: {field.Name}, Field Type: {field.FieldType}");
+                }
+
+                // 5. Demonstrating MethodInfo and invoking a method using Reflection
+                MethodInfo method = myClassType.GetMethod("PrivateMethod", BindingFlags.NonPublic | BindingFlags.Instance);
+                if (method != null)
+                {
+                    method.Invoke(myClassInstance, new object[] { 10 }); // Передача параметру 10 методу
+                }
             }
-        }
-    }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
 
-    // Метод для завантаження тексту "Lorem ipsum" з файлу
-    private static void LoadLoremIpsumText()
-    {
-        try
-        {
-            // Читання тексту з файлу та збереження у полі
-            loremIpsumText = File.ReadAllText("LoremIpsum.txt");
+            Console.ReadLine();
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred while reading the text: {ex.Message}");
-        }
-    }
-
-    // Метод для виведення кількості слів у тексті "Lorem ipsum"
-    private static void CountWordsInLoremIpsum()
-    {
-        // Використання Split для розділення тексту на слова та отримання кількості слів
-        int wordCount = loremIpsumText.Split(new char[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
-        Console.WriteLine($"The number of words in the text \"Lorem ipsum\": {wordCount}");
-    }
-
-    // Метод для виконання математичної операції
-    private static void PerformMathOperation()
-    {
-        Console.Write("Enter the expression to calculate: ");
-        string expression = Console.ReadLine();
-
-        try
-        {
-            // Використання Eval для обчислення виразу
-            double result = Eval(expression);
-            Console.WriteLine($"Calculation result: {result}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred while evaluating the expression: {ex.Message}");
-        }
-    }
-
-    // Метод Eval для обчислення математичного виразу
-    private static double Eval(string expression)
-    {
-        var dataTable = new System.Data.DataTable();
-        return Convert.ToDouble(dataTable.Compute(expression, string.Empty));
     }
 }

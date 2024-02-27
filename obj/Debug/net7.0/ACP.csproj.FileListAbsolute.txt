@@ -23,3 +23,6 @@ C:\Users\Vitalik\source\repos\ACP\ACP\obj\Debug\net7.0\refint\ACP.dll
 C:\Users\Vitalik\source\repos\ACP\ACP\obj\Debug\net7.0\ACP.pdb
 C:\Users\Vitalik\source\repos\ACP\ACP\obj\Debug\net7.0\ACP.genruntimeconfig.cache
 C:\Users\Vitalik\source\repos\ACP\ACP\obj\Debug\net7.0\ref\ACP.dll
+C:\Users\Vitalik\source\repos\ACP\ACP\bin\Debug\net7.0\Newtonsoft.Json.dll
+C:\Users\Vitalik\source\repos\ACP\ACP\obj\Debug\net7.0\ACP.csproj.AssemblyReference.cache
+C:\Users\Vitalik\source\repos\ACP\ACP\obj\Debug\net7.0\ACP.csproj.CopyComplete
